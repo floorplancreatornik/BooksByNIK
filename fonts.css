@@ -1,0 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+/* Apply Malayalam font globally for text, falling back to Roboto for Latin/numbers if Noto is not fully available */
+body {
+    font-family: 'Noto Sans Malayalam', 'Roboto', sans-serif;
+}
