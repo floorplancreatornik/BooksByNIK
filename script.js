@@ -14,10 +14,10 @@ const script = (() => {
             document.body.classList.add('dark-mode');
         }
         if (localStorage.getItem('isLoggedIn') === 'true') {
+            // Redirect to the home page (home.html)
             window.location.href = 'home.html';
         } else {
-             // 'login' screen display is only possible in index.html, not home.html
-             // This line should ideally not run in home.html
+             // Stay on login screen (index.html)
              if (document.getElementById('login-screen')) {
                  document.getElementById('login-screen').style.display = 'flex';
              }
@@ -37,6 +37,7 @@ const script = (() => {
         localStorage.setItem('userName', name);
         localStorage.setItem('userPhone', phone);
 
+        // Redirect to the home page (home.html)
         window.location.href = 'home.html';
     };
 
@@ -71,7 +72,7 @@ const script = (() => {
         if (screenId === 'checkout') renderCheckout();
         if (screenId === 'thank-you') renderThankYou();
 
-        // FIX: Re-run i18n initialization on screen change (THIS IS THE LANGUAGE FIX)
+        // FIX: Re-run i18n initialization on screen change 
         i18n.init();
     };
 
@@ -82,15 +83,24 @@ const script = (() => {
             document.body.classList.add('dark-mode');
         }
 
-        // This is primarily for home.html onload call
         updateCartBadge();
+        
+        // CRITICAL FIX FOR EMPTY LIST: 
+        // Wait briefly to ensure api.js has fully loaded its data structure
+        // before attempting to render the book list.
+        setTimeout(() => {
+            if (document.URL.includes('home.html')) {
+                 renderBookList(); 
+            }
+        }, 100); 
     };
 
     const renderBookList = () => {
         const bookListContainer = document.getElementById('book-list');
-        // FIX for empty list: Ensure API is returning data
-        const bookData = api.getBookData(); 
         
+        // Robust check for api.getBookData() and assignment
+        const bookData = typeof api !== 'undefined' && typeof api.getBookData === 'function' ? api.getBookData() : [];
+
         // CRITICAL DEBUG STEP: Check the console (F12) for this output!
         console.log('Book Data received:', bookData); 
 
@@ -109,7 +119,6 @@ const script = (() => {
                 `;
             }).join('');
         } else {
-            // Optional: Show a message if no books are loaded
             bookListContainer.innerHTML = '<p style="text-align: center; color: #999;">Book list is currently empty or failed to load. Check console (F12) for details.</p>';
         }
     };
