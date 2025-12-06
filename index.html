@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-i18n="appTitle">BooksByNIK Login</title>
-    <link rel="stylesheet" href="fonts.css">
+    <title></title> <link rel="stylesheet" href="fonts.css">
     <link rel="stylesheet" href="style.css">
     
     <script defer src="i18n.js"></script>
@@ -16,6 +15,9 @@
         
         <header class="app-header">
             <span class="header-title" data-i18n="appTitle">BooksByNIK</span>
+            <div class="header-actions">
+                <button id="lang-toggle" onclick="i18n.setLanguage(i18n.currentLanguage === 'ml' ? 'en' : 'ml')" class="icon-btn">ML/EN</button>
+            </div>
         </header>
 
         <section id="login-screen" class="app-screen login-screen" style="display: flex;">

@@ -20,10 +20,12 @@ const i18n = (() => {
             removeBtn: 'നീക്കം ചെയ്യുക',
             checkoutHeader: 'ചെക്ക്ഔട്ട്',
             checkoutSummary: 'ഓർഡർ സംഗ്രഹം',
+            userDetails: 'ഉപയോക്തൃ വിവരങ്ങൾ', // FINAL FIX: Added this key
+            shippingDetails: 'ഷിപ്പിംഗ് വിവരങ്ങൾ', // FINAL FIX: Added this key
             checkoutAddressLabel: 'ഷിപ്പിംഗ് വിലാസം',
             checkoutPincodeLabel: 'പിൻകോഡ്',
             checkoutBtn: 'പേയ്‌മെന്റ് തുടരുക',
-            checkoutValidation: 'ദയവായി സാധുവായ വിലാസവും 6 അക്ക പിൻകോഡും നൽകുക.',
+            checkoutValidation: 'ദയവായി സാധുവായ പേര്, ഫോൺ നമ്പർ, വിലാസം, 6 അക്ക പിൻകോഡ് എന്നിവ നൽകുക.',
             payBtnText: 'പേയ്‌മെന്റ് നടത്തുക (₹0)',
             thankYouHeader: 'ഓർഡർ പൂർത്തിയായി!',
             thankYouMessage: 'നിങ്ങളുടെ ഓർഡർ വിജയകരമായി ലഭിച്ചു. പേയ്‌മെന്റ് പൂർത്തിയാക്കിയ ശേഷം നിങ്ങളുടെ ഓർഡർ ഉടൻ ഷിപ്പ് ചെയ്യുന്നതാണ്.',
@@ -50,10 +52,12 @@ const i18n = (() => {
             removeBtn: 'Remove',
             checkoutHeader: 'Checkout',
             checkoutSummary: 'Order Summary',
+            userDetails: 'User Details', // FINAL FIX: Added this key
+            shippingDetails: 'Shipping Details', // FINAL FIX: Added this key
             checkoutAddressLabel: 'Shipping Address',
             checkoutPincodeLabel: 'Pincode',
             checkoutBtn: 'Proceed to Payment',
-            checkoutValidation: 'Please enter a valid address and 6-digit Pincode.',
+            checkoutValidation: 'Please enter a valid name, phone number, address, and 6-digit Pincode.',
             payBtnText: 'Pay (₹0)',
             thankYouHeader: 'Order Complete!',
             thankYouMessage: 'Your order has been successfully placed. Once payment is complete, your order will be shipped shortly.',
@@ -69,7 +73,10 @@ const i18n = (() => {
             currentLanguage = lang;
             localStorage.setItem('language', lang);
             init();
-            script.showScreen(script.getCurrentScreenId()); 
+            // Show the correct screen after language change
+            if (script && script.getCurrentScreenId) { 
+                script.showScreen(script.getCurrentScreenId()); 
+            }
         }
     };
 

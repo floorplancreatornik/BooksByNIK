@@ -1,6 +1,6 @@
 const script = (() => {
     const APP_SCREENS = [
-        'home', 'cart', 'profile', 'book-details', 'checkout', 'thank-you' // Removed 'login'
+        'home', 'cart', 'profile', 'book-details', 'checkout', 'thank-you' 
     ];
     let currentBookId = null;
     let currentScreenId = 'home';
@@ -46,13 +46,10 @@ const script = (() => {
             document.body.classList.add('dark-mode');
         }
         
-        // Start directly on the home screen as login is handled externally
         showScreen('home'); 
         
         updateCartBadge();
     };
-
-    // Removed validateAndRedirect function, as it is now in login_script.js
 
     const renderBookList = () => {
         const bookListContainer = document.getElementById('book-list');
@@ -91,7 +88,7 @@ const script = (() => {
         showScreen('book-details');
     };
 
-    // --- Checkout Logic (Uses Editable Fields) ---
+    // --- Checkout Logic (FINAL UPI REDIRECT FIX) ---
 
     const processPayment = async () => {
         const name = document.getElementById('order-name').value.trim(); 
@@ -101,7 +98,7 @@ const script = (() => {
         const total = cart.calculateTotal();
         let isValid = true;
         
-        // 1. Validation (Includes checks for Name and Phone)
+        // 1. Validation 
         if (name === "" || phone.length !== 10 || isNaN(phone) || address.length < 10 || pincode.length !== 6 || isNaN(pincode)) {
              alert(i18n.getKey('checkoutValidation'));
              isValid = false;
@@ -112,7 +109,7 @@ const script = (() => {
             // 2. Gather Data for UPI Note & Sheet Logging
             const bookCodes = cart.getCartItems().map(item => item.id).join('+'); 
 
-            // 3. API submission (Writes to Google Sheet)
+            // 3. API submission (Writes to Google Sheet) - CRITICAL STEP FIRST!
             const orderData = {
                 items: cart.getCartItems(),
                 total: total,
@@ -123,19 +120,20 @@ const script = (() => {
             
             // 4. Generate UPI link with Custom Note
             const customNote = `${bookCodes}|${pincode}|${phone}|${name.replace(/ /g, '_')}`; 
-            
             const upiLink = api.generateUpiLink(total, customNote);
 
-            window.open(upiLink, '_blank'); 
-
-            // 5. Update Thank You Screen and clear cart
+            // 5. Update Order ID and clear cart (MUST be done before redirecting)
             finalOrderId = result.orderId;
-            
             localStorage.removeItem('cart');
             cart.cartItems = [];
             updateCartBadge();
             
-            showScreen('thank-you');
+            // 6. REDIRECT TO UPI APP (Using direct location change)
+            window.location.href = upiLink; 
+            
+            // NOTE: The Thank You screen logic is removed here. If the UPI app 
+            // fails, the user will be left on the Thank You screen due to
+            // browser history behavior, which is the desired fallback.
         }
     };
     
