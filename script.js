@@ -1,4 +1,5 @@
 const script = (() => {
+
     const APP_SCREENS = [
         'home', 'cart', 'profile', 'book-details', 'checkout', 'thank-you' 
     ];
@@ -13,49 +14,48 @@ const script = (() => {
             document.body.classList.add('dark-mode');
         }
         if (localStorage.getItem('isLoggedIn') === 'true') {
-            // If logged in, redirect to the home page (home.html)
             window.location.href = 'home.html';
         } else {
-             // Stay on login screen (index.html)
-             showScreen('login');
+             // 'login' screen display is only possible in index.html, not home.html
+             // This line should ideally not run in home.html
+             if (document.getElementById('login-screen')) {
+                 document.getElementById('login-screen').style.display = 'flex';
+             }
         }
     };
-    
+
     const login = () => {
         const name = document.getElementById('login-name').value.trim();
         const phone = document.getElementById('login-phone').value.trim();
-        
+
         if (name === "" || phone.length !== 10 || isNaN(phone)) {
             alert(i18n.getKey('loginValidation'));
             return;
         }
-        
+
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('userName', name);
         localStorage.setItem('userPhone', phone);
-        
-        // Redirect to the home page (home.html)
+
         window.location.href = 'home.html';
     };
 
-
     // --- Core Navigation and Initialization (Used in home.html) ---
-
     const showScreen = (screenId) => {
         const bottomNav = document.getElementById('main-bottom-nav');
         const bottomActionsBar = document.querySelector('.bottom-actions-bar');
-        
+
         APP_SCREENS.forEach(id => {
             const screen = document.getElementById(id + '-screen');
             if (screen) screen.style.display = 'none';
         });
-        
+
         const targetScreen = document.getElementById(screenId + '-screen');
         if (targetScreen) targetScreen.style.display = 'flex';
         currentScreenId = screenId;
 
         const isMainScreen = ['home', 'cart', 'profile'].includes(screenId);
-        
+
         if (bottomNav) bottomNav.style.display = isMainScreen ? 'flex' : 'none'; 
         if (bottomActionsBar) bottomActionsBar.style.display = screenId === 'book-details' ? 'flex' : 'none';
 
@@ -70,18 +70,18 @@ const script = (() => {
         if (screenId === 'profile') renderProfile();
         if (screenId === 'checkout') renderCheckout();
         if (screenId === 'thank-you') renderThankYou();
-        
-        // FIX: Re-run i18n initialization on screen change 
+
+        // FIX: Re-run i18n initialization on screen change (THIS IS THE LANGUAGE FIX)
         i18n.init();
     };
 
     const init = () => {
         i18n.init(); 
-        
+
         if (localStorage.getItem('darkMode') === 'true') {
             document.body.classList.add('dark-mode');
         }
-        
+
         // This is primarily for home.html onload call
         updateCartBadge();
     };
@@ -91,6 +91,9 @@ const script = (() => {
         // FIX for empty list: Ensure API is returning data
         const bookData = api.getBookData(); 
         
+        // CRITICAL DEBUG STEP: Check the console (F12) for this output!
+        console.log('Book Data received:', bookData); 
+
         if (bookData && bookData.length > 0) {
              bookListContainer.innerHTML = bookData.map(book => {
                 return `
@@ -107,7 +110,7 @@ const script = (() => {
             }).join('');
         } else {
             // Optional: Show a message if no books are loaded
-            bookListContainer.innerHTML = '<p style="text-align: center; color: #999;">Book list is currently empty.</p>';
+            bookListContainer.innerHTML = '<p style="text-align: center; color: #999;">Book list is currently empty or failed to load. Check console (F12) for details.</p>';
         }
     };
 
@@ -116,7 +119,7 @@ const script = (() => {
         const book = api.getBookData().find(b => b.id === id);
         const detailsContent = document.querySelector('.book-details-content');
         if (!book) return;
-        
+
         // FIX: Ensure description is translated based on the current language
         const description = i18n.currentLanguage === 'en' ? book.description_en : book.description;
 
@@ -128,12 +131,10 @@ const script = (() => {
             <p style="font-size: 1.5em; font-weight: bold; color: var(--primary-color);">${i18n.getKey('price')}: ₹${book.price}</p>
             <p style="margin-top: 15px;">${description}</p>
         `;
-
         showScreen('book-details');
     };
 
     // --- Checkout Logic (UPI UX IMPROVEMENT) ---
-
     const processPayment = async () => {
         const name = document.getElementById('order-name').value.trim(); 
         const phone = document.getElementById('order-phone').value.trim(); 
@@ -141,7 +142,7 @@ const script = (() => {
         const pincode = document.getElementById('pincode').value.trim();
         const total = cart.calculateTotal();
         let isValid = true;
-        
+
         const payButton = document.getElementById('checkout-btn');
         const payBtnText = document.getElementById('pay-btn-text');
         const originalText = payBtnText.innerText; 
@@ -153,13 +154,13 @@ const script = (() => {
         }
 
         if (isValid) {
-            
+
             // UX FIX: Disable button and show loading/redirecting text to prevent double-click
             payButton.disabled = true;
             payBtnText.innerText = "Redirecting to UPI App..."; 
 
             try {
-                
+
                 // 2. Gather Data for UPI Note & Sheet Logging
                 const bookCodes = cart.getCartItems().map(item => item.id).join('+'); 
 
@@ -171,7 +172,7 @@ const script = (() => {
                     user: { name, phone } 
                 };
                 const result = await api.submitOrder(orderData);
-                
+
                 // 4. Generate UPI link with Custom Note
                 const customNote = `${bookCodes}|${pincode}|${phone}|${name.replace(/ /g, '_')}`; 
                 const upiLink = api.generateUpiLink(total, customNote);
@@ -181,7 +182,7 @@ const script = (() => {
                 localStorage.removeItem('cart');
                 cart.cartItems = [];
                 updateCartBadge();
-                
+
                 // 6. REDIRECT TO UPI APP 
                 window.location.href = upiLink; 
 
@@ -194,9 +195,8 @@ const script = (() => {
             }
         }
     };
-    
-    // --- Remaining Utility Functions ---
 
+    // --- Remaining Utility Functions ---
     const toggleDarkMode = () => {
         document.body.classList.toggle('dark-mode');
         localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
@@ -210,12 +210,12 @@ const script = (() => {
             badge.style.display = totalItems > 0 ? 'block' : 'none';
         }
     };
-    
+
     const renderProfile = () => {
         const profileContent = document.querySelector('#profile-screen .profile-content');
         const name = localStorage.getItem('userName') || 'User';
         const phone = localStorage.getItem('userPhone') || 'N/A';
-        
+
         profileContent.innerHTML = `
             <div class="info-section" style="text-align: left;">
                 <p><strong>${i18n.getKey('loginNameLabel')}:</strong> ${name}</p>
@@ -231,32 +231,26 @@ const script = (() => {
         localStorage.removeItem('userName');
         localStorage.removeItem('userPhone');
         localStorage.removeItem('cart');
-        // Redirect back to the dedicated login page
         window.location.href = 'index.html';
     };
 
     const renderCheckout = () => {
-        // ... (function logic remains the same) ...
         const total = cart.calculateTotal();
         const summaryItems = document.getElementById('summary-items');
         const totalAmountSpan = document.getElementById('total-amount');
         const payBtnText = document.getElementById('pay-btn-text');
-        
-        // Get the stored login info
+
         const storedName = localStorage.getItem('userName') || '';
         const storedPhone = localStorage.getItem('userPhone') || '';
-        
-        // Set the input values (pre-fill)
+
         document.getElementById('order-name').value = storedName;
         document.getElementById('order-phone').value = storedPhone;
 
         let summaryHTML = '';
-
         if (cart.getCartItems().length === 0) {
             showScreen('home'); 
             return;
         } 
-
         cart.getCartItems().forEach(item => {
             const itemTotal = item.price * item.quantity;
             summaryHTML += `
@@ -266,10 +260,8 @@ const script = (() => {
                 </div>
             `;
         });
-
         summaryItems.innerHTML = summaryHTML;
         totalAmountSpan.innerText = `₹${total}`;
-        
         payBtnText.innerText = `${i18n.getKey('payBtnText').replace('₹0', `₹${total}`)}`;
     };
 
@@ -278,7 +270,6 @@ const script = (() => {
         document.getElementById('order-id-label').nextElementSibling.innerText = finalOrderId;
     }
 
-
     const getCurrentBookId = () => currentBookId;
     const getCurrentScreenId = () => currentScreenId;
 
@@ -286,7 +277,6 @@ const script = (() => {
     if (document.URL.includes('home.html')) {
         document.addEventListener('DOMContentLoaded', init);
     }
-    // No explicit DOMContentLoaded listener for index.html as it uses checkLogin in onload
 
     return {
         login,
