@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title> <link rel="stylesheet" href="fonts.css">
+    <title></title> 
+    <meta name="google" content="notranslate"> 
+    
+    <link rel="stylesheet" href="fonts.css">
     <link rel="stylesheet" href="style.css">
     
     <script defer src="api.js"></script>
@@ -11,13 +14,15 @@
     <script defer src="i18n.js"></script>
     <script defer src="script.js"></script> 
 </head>
-<body onload="script.showScreen('home')" class="notranslate"> <main class="app-container">
+<body onload="script.showScreen('home')" class="notranslate"> 
+
+    <main class="app-container">
         
         <header class="app-header">
             <span class="header-title" data-i18n="appTitle">BooksByNIK</span>
             <div class="header-actions">
                 <button id="dark-mode-toggle" onclick="script.toggleDarkMode()" class="icon-btn">
-                    <img src="images/sun.png" alt="Toggle Dark Mode">
+                    <span>🌙/☀️</span>
                 </button>
                 <button id="lang-toggle" onclick="i18n.setLanguage(i18n.currentLanguage === 'ml' ? 'en' : 'ml')" class="icon-btn">ML/EN</button>
             </div>
@@ -95,18 +100,18 @@
 
     <nav id="main-bottom-nav" class="bottom-nav">
         <a href="#" class="nav-item active" data-target="home" onclick="script.showScreen('home')">
-            <img src="images/home.png" alt="Home">
+            <span>🏠</span>
             <span>Home</span>
         </a>
         <a href="#" class="nav-item" data-target="cart" onclick="script.showScreen('cart')">
             <span class="cart-icon-container">
-                <img src="images/cart.png" alt="Cart">
+                <span>🛒</span>
                 <span id="cart-count" class="cart-badge" style="display: none;">0</span>
             </span>
             <span>Cart</span>
         </a>
         <a href="#" class="nav-item" data-target="profile" onclick="script.showScreen('profile')">
-            <img src="images/profile.png" alt="Profile">
+            <span>👤</span>
             <span>Profile</span>
         </a>
     </nav>

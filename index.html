@@ -1,9 +1,12 @@
 <!DOCTYPE html>
-<html lang="ml">
+<html lang="en"> 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title> <link rel="stylesheet" href="fonts.css">
+    <title></title> 
+    <meta name="google" content="notranslate"> 
+    
+    <link rel="stylesheet" href="fonts.css">
     <link rel="stylesheet" href="style.css">
     
     <script defer src="api.js"></script>
@@ -11,7 +14,7 @@
     <script defer src="i18n.js"></script>
     <script defer src="script.js"></script>
 </head>
-<body onload="script.checkLogin()" class="notranslate">
+<body onload="script.checkLogin()" class="notranslate"> 
 
     <div class="app-container">
         
@@ -19,7 +22,7 @@
             <span class="header-title" data-i18n="appTitle">BooksByNIK</span>
             <div class="header-actions">
                 <button id="dark-mode-toggle" onclick="script.toggleDarkMode()" class="icon-btn">
-                    <img src="images/sun.png" alt="Toggle Dark Mode">
+                    <span>🌙/☀️</span> 
                 </button>
                 <button id="lang-toggle" onclick="i18n.setLanguage(i18n.currentLanguage === 'ml' ? 'en' : 'ml')" class="icon-btn">ML/EN</button>
             </div>
