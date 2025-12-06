@@ -109,7 +109,7 @@ const script = (() => {
             // 2. Gather Data for UPI Note & Sheet Logging
             const bookCodes = cart.getCartItems().map(item => item.id).join('+'); 
 
-            // 3. API submission (Writes to Google Sheet) - CRITICAL STEP FIRST!
+            // 3. API submission (Writes to Google Sheet)
             const orderData = {
                 items: cart.getCartItems(),
                 total: total,
@@ -128,12 +128,11 @@ const script = (() => {
             cart.cartItems = [];
             updateCartBadge();
             
-            // 6. REDIRECT TO UPI APP (Using direct location change)
+            // 6. FIX: REDIRECT TO UPI APP 
             window.location.href = upiLink; 
             
-            // NOTE: The Thank You screen logic is removed here. If the UPI app 
-            // fails, the user will be left on the Thank You screen due to
-            // browser history behavior, which is the desired fallback.
+            // IMPORTANT: showScreen('thank-you') is now removed from here. 
+            // The Thank You screen will only be visible if the user hits the browser back button.
         }
     };
     

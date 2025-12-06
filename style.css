@@ -22,7 +22,8 @@ body {
     transition: background-color 0.3s, color 0.3s;
 }
 
-/* --- Dark Mode Toggle --- */
+/* --- Dark Mode Toggle Styles --- */
+
 body.dark-mode {
     background-color: var(--bg-color-dark);
     color: var(--text-color-dark);
@@ -48,14 +49,45 @@ body.dark-mode input {
     border: 1px solid var(--border-color-dark);
 }
 
-/* FINAL FIX: DARK MODE ICON VISIBILITY */
-body.dark-mode .app-header .icon-btn img {
-    filter: invert(100%) brightness(1.5); /* Makes dark icons white/bright in dark mode */
+body.dark-mode .cart-item {
+    border-bottom: 1px solid var(--border-color-dark);
 }
 
+body.dark-mode .cart-summary {
+    border-top: 1px solid var(--border-color-dark);
+}
+
+body.dark-mode .book-author, body.dark-mode .book-category {
+    color: #bbb;
+}
+
+body.dark-mode .back-btn {
+    color: var(--text-color-dark);
+}
+
+body.dark-mode .bottom-actions-bar {
+    background-color: var(--card-bg-dark);
+}
+
+body.dark-mode .info-section {
+    border: 1px solid var(--border-color-dark);
+}
+
+body.dark-mode .total-line {
+    border-top: 1px solid var(--border-color-dark);
+}
+
+/* FIX: DARK MODE ICON VISIBILITY (Sun icon was invisible against dark background) */
+body.dark-mode .app-header .icon-btn img {
+    /* Filters the image color to white/light gray */
+    filter: invert(100%) brightness(1.5); 
+}
+
+/* Ensure the language button text is also visible in dark mode */
 body.dark-mode .app-header .header-actions #lang-toggle {
     color: #fff; 
 }
+
 /* --- Header and Navigation --- */
 
 .app-container {
@@ -272,10 +304,6 @@ input[type="password"] {
     color: #666;
 }
 
-body.dark-mode .book-author, body.dark-mode .book-category {
-    color: #bbb;
-}
-
 .price-tag {
     position: absolute;
     top: 5px;
@@ -312,9 +340,6 @@ body.dark-mode .book-author, body.dark-mode .book-category {
     cursor: pointer;
     color: var(--text-color-light);
 }
-body.dark-mode .back-btn {
-    color: var(--text-color-dark);
-}
 
 .book-details-content {
     flex-grow: 1;
@@ -336,9 +361,6 @@ body.dark-mode .back-btn {
     justify-content: center;
     align-items: center;
     z-index: 90;
-}
-body.dark-mode .bottom-actions-bar {
-    background-color: var(--card-bg-dark);
 }
 
 .add-to-cart-button {
@@ -365,10 +387,6 @@ body.dark-mode .bottom-actions-bar {
     align-items: center;
     padding: 10px 0;
     border-bottom: 1px solid var(--border-color-light);
-}
-
-body.dark-mode .cart-item {
-    border-bottom: 1px solid var(--border-color-dark);
 }
 
 .item-info {
@@ -416,9 +434,6 @@ body.dark-mode .cart-item {
     padding: 20px 0;
     border-top: 1px solid var(--border-color-light);
 }
-body.dark-mode .cart-summary {
-    border-top: 1px solid var(--border-color-dark);
-}
 
 /* Checkout Screen */
 .checkout-screen .section-title {
@@ -444,9 +459,6 @@ body.dark-mode .cart-summary {
     border-top: 1px solid var(--border-color-light);
     padding-top: 10px;
     margin-top: 10px;
-}
-body.dark-mode .total-line {
-    border-top: 1px solid var(--border-color-dark);
 }
 
 /* Thank You Screen */
@@ -476,7 +488,4 @@ body.dark-mode .total-line {
     border: 1px solid var(--border-color-light);
     border-radius: 8px;
     margin-bottom: 30px;
-}
-body.dark-mode .info-section {
-    border: 1px solid var(--border-color-dark);
 }

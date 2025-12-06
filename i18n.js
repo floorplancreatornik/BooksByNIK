@@ -20,8 +20,8 @@ const i18n = (() => {
             removeBtn: 'നീക്കം ചെയ്യുക',
             checkoutHeader: 'ചെക്ക്ഔട്ട്',
             checkoutSummary: 'ഓർഡർ സംഗ്രഹം',
-            userDetails: 'ഉപയോക്തൃ വിവരങ്ങൾ', // FIX: Added this key
-            shippingDetails: 'ഷിപ്പിംഗ് വിവരങ്ങൾ', // FIX: Added this key
+            userDetails: 'ഉപയോക്തൃ വിവരങ്ങൾ', 
+            shippingDetails: 'ഷിപ്പിംഗ് വിവരങ്ങൾ',
             checkoutAddressLabel: 'ഷിപ്പിംഗ് വിലാസം',
             checkoutPincodeLabel: 'പിൻകോഡ്',
             checkoutBtn: 'പേയ്‌മെന്റ് തുടരുക',
@@ -52,8 +52,8 @@ const i18n = (() => {
             removeBtn: 'Remove',
             checkoutHeader: 'Checkout',
             checkoutSummary: 'Order Summary',
-            userDetails: 'User Details', // FIX: Added this key
-            shippingDetails: 'Shipping Details', // FIX: Added this key
+            userDetails: 'User Details', 
+            shippingDetails: 'Shipping Details',
             checkoutAddressLabel: 'Shipping Address',
             checkoutPincodeLabel: 'Pincode',
             checkoutBtn: 'Proceed to Payment',
@@ -74,7 +74,7 @@ const i18n = (() => {
             localStorage.setItem('language', lang);
             init(); // Re-initializes all data-i18n attributes
 
-            // FIX for Persistence: Forces the current screen to re-render using the new language
+            // FIX for Persistence: Forces the current screen to re-render 
             if (script && script.getCurrentScreenId) { 
                 script.showScreen(script.getCurrentScreenId()); 
             }
@@ -94,7 +94,12 @@ const i18n = (() => {
                 element.innerText = getKey(key);
             }
         });
-        document.getElementById('lang-toggle').innerText = currentLanguage === 'ml' ? 'English' : 'മലയാളം';
+        
+        // CRITICAL FIX: Ensure the button label itself updates on every click
+        const langToggle = document.getElementById('lang-toggle');
+        if (langToggle) {
+             langToggle.innerText = currentLanguage === 'ml' ? 'English' : 'മലയാളം';
+        }
     };
 
     return {
