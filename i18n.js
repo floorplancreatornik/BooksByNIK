@@ -20,8 +20,8 @@ const i18n = (() => {
             removeBtn: 'നീക്കം ചെയ്യുക',
             checkoutHeader: 'ചെക്ക്ഔട്ട്',
             checkoutSummary: 'ഓർഡർ സംഗ്രഹം',
-            userDetails: 'ഉപയോക്തൃ വിവരങ്ങൾ', // FINAL FIX: Added this key
-            shippingDetails: 'ഷിപ്പിംഗ് വിവരങ്ങൾ', // FINAL FIX: Added this key
+            userDetails: 'ഉപയോക്തൃ വിവരങ്ങൾ', // FIX: Added this key
+            shippingDetails: 'ഷിപ്പിംഗ് വിവരങ്ങൾ', // FIX: Added this key
             checkoutAddressLabel: 'ഷിപ്പിംഗ് വിലാസം',
             checkoutPincodeLabel: 'പിൻകോഡ്',
             checkoutBtn: 'പേയ്‌മെന്റ് തുടരുക',
@@ -52,8 +52,8 @@ const i18n = (() => {
             removeBtn: 'Remove',
             checkoutHeader: 'Checkout',
             checkoutSummary: 'Order Summary',
-            userDetails: 'User Details', // FINAL FIX: Added this key
-            shippingDetails: 'Shipping Details', // FINAL FIX: Added this key
+            userDetails: 'User Details', // FIX: Added this key
+            shippingDetails: 'Shipping Details', // FIX: Added this key
             checkoutAddressLabel: 'Shipping Address',
             checkoutPincodeLabel: 'Pincode',
             checkoutBtn: 'Proceed to Payment',
@@ -72,8 +72,9 @@ const i18n = (() => {
         if (translations[lang]) {
             currentLanguage = lang;
             localStorage.setItem('language', lang);
-            init();
-            // Show the correct screen after language change
+            init(); // Re-initializes all data-i18n attributes
+
+            // FIX for Persistence: Forces the current screen to re-render using the new language
             if (script && script.getCurrentScreenId) { 
                 script.showScreen(script.getCurrentScreenId()); 
             }
