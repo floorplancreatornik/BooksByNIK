@@ -3,131 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-i18n="appTitle">BooksByNIK</title>
-    <link rel="stylesheet" href="fonts.css">
+    <title></title> <link rel="stylesheet" href="fonts.css">
     <link rel="stylesheet" href="style.css">
-    <script defer src="book_data.js"></script>
-    <script defer src="i18n.js"></script>
+    
     <script defer src="api.js"></script>
     <script defer src="cart.js"></script>
-    <script defer src="script.js"></script>
+    <script defer src="i18n.js"></script>
+    <script defer src="script.js"></script> 
 </head>
-<body>
+<body onload="script.showScreen('home')">
 
     <main class="app-container">
         
         <header class="app-header">
             <span class="header-title" data-i18n="appTitle">BooksByNIK</span>
             <div class="header-actions">
-                <button id="lang-toggle" onclick="i18n.setLanguage(i18n.currentLanguage === 'ml' ? 'en' : 'ml')" class="icon-btn">ML/EN</button>
-                <button onclick="script.toggleDarkMode()" class="icon-btn">
-                    <img src="https://cdn.jsdelivr.net/npm/heroicons/outline/moon.svg" alt="Dark Mode" style="width: 24px;">
+                <button id="dark-mode-toggle" onclick="script.toggleDarkMode()" class="icon-btn">
+                    <img src="images/sun.png" alt="Toggle Dark Mode">
                 </button>
+                <button id="lang-toggle" onclick="i18n.setLanguage(i18n.currentLanguage === 'ml' ? 'en' : 'ml')" class="icon-btn">ML/EN</button>
             </div>
         </header>
 
-        <section id="home-screen" class="app-screen main-screen" style="display: flex;">
+        <section id="home-screen" class="app-screen main-screen">
             <h1 data-i18n="homeHeader">Book List</h1>
             <div id="book-list" class="book-list-grid">
                 </div>
         </section>
 
-        <section id="book-details-screen" class="app-screen book-details-screen">
-            <div class="details-header">
-                <button onclick="script.showScreen('home')" class="back-btn">←</button>
-                <h1 data-i18n="price">Price</h1>
-            </div>
-            <div class="book-details-content">
-                </div>
-            <div class="bottom-actions-bar">
-                <button class="add-to-cart-button" onclick="cart.addItem()">
-                    + <span data-i18n="cartHeader">Cart</span>
-                </button>
-            </div>
-        </section>
-
-        <section id="cart-screen" class="app-screen main-screen">
+        <section id="cart-screen" class="app-screen">
             <h1 data-i18n="cartHeader">Cart</h1>
             <div id="cart-content" class="cart-content">
+                <p id="cart-empty-message" data-i18n="cartEmpty" style="text-align: center; margin-top: 50px;"></p>
+            </div>
+            <div id="cart-checkout" style="display: none; padding-bottom: 20px;">
+                <div class="cart-summary">
+                    <span data-i18n="total">TOTAL:</span>
+                    <span id="cart-total-amount">₹0</span>
                 </div>
-            <div class="cart-summary">
-                <span>Total:</span>
-                <span id="cart-total">₹0</span>
+                <button class="continue-button ml" onclick="script.showScreen('checkout')" data-i18n="checkoutBtn">Proceed to Payment</button>
             </div>
-            <button id="cart-checkout-button" class="continue-button" onclick="script.showScreen('checkout')" style="display: none;" data-i18n="checkoutBtn">Proceed to Checkout</button>
         </section>
 
-        <section id="checkout-screen" class="app-screen checkout-screen">
-            <div class="details-header">
-                <button onclick="script.showScreen('cart')" class="back-btn">←</button>
-                <h1 data-i18n="checkoutHeader">Checkout</h1>
-            </div>
-            
-            <div class="section-title" data-i18n="checkoutSummary">Order Summary</div>
-            <div id="summary-items" class="summary-items">
-                </div>
-            <div class="summary-line total-line">
-                <span>TOTAL:</span>
-                <span id="total-amount">₹0</span>
-            </div>
-
-            <div class="section-title" data-i18n="userDetails">User Details</div>
-            <div class="input-group">
-                <input type="text" id="order-name" data-i18n="loginNameLabel" placeholder="Full Name">
-                <input type="tel" id="order-phone" data-i18n="loginPhoneLabel" placeholder="Phone Number" maxlength="10">
-            </div>
-            <div class="section-title" data-i18n="shippingDetails">Shipping Details</div>
-            <div class="input-group">
-                <input type="text" id="address" data-i18n="checkoutAddressLabel" placeholder="Shipping Address">
-                <input type="tel" id="pincode" data-i18n="checkoutPincodeLabel" placeholder="Pincode" maxlength="6">
-            </div>
-
-            <button class="continue-button ml" onclick="script.processPayment()">
-                <span id="pay-btn-text" data-i18n="payBtnText">Pay (₹0)</span>
-            </button>
-        </section>
-        
-        <section id="thank-you-screen" class="app-screen thank-you-screen">
-            <h1 data-i18n="thankYouHeader">Order Complete!</h1>
-            <p data-i18n="thankYouMessage" style="text-align: center;">Your order has been successfully placed. Once payment is complete, your order will be shipped shortly.</p>
-            
-            <div class="summary-line total-line" style="margin-top: 20px;">
-                <span>Amount Paid:</span>
-                <span id="order-paid-amount">₹0</span>
-            </div>
-            <div class="summary-line">
-                <span id="order-id-label" data-i18n="orderId">Order ID:</span>
-                <span id="order-id-value">BBN-123456</span>
-            </div>
-
-            <button class="continue-button ml" onclick="script.showScreen('home')" style="margin-top: 40px;" data-i18n="homeHeader">Book List</button>
-        </section>
-
-
-        <section id="profile-screen" class="app-screen main-screen">
+        <section id="profile-screen" class="app-screen">
             <h1 data-i18n="profileHeader">Profile</h1>
             <div class="profile-content">
                 </div>
         </section>
+
+        <section id="book-details-screen" class="app-screen book-details-screen">
+            <div class="details-header">
+                <button class="back-btn" onclick="script.showScreen('home')">←</button>
+                <h1 data-i18n="detailsHeader">Book Details</h1>
+            </div>
+            <div class="book-details-content">
+                </div>
+        </section>
+
+        <section id="checkout-screen" class="app-screen">
+            <h1 data-i18n="checkoutHeader">Checkout</h1>
+            
+            <div class="section-title" data-i18n="checkoutSummary">Order Summary</div>
+            <div id="summary-items"></div>
+            <div class="total-line">
+                <span data-i18n="total">TOTAL:</span>
+                <span id="total-amount">₹0</span>
+            </div>
+
+            <div class="section-title" data-i18n="userDetails">User Details</div>
+            <input type="text" id="order-name" data-i18n="loginNameLabel" placeholder="Full Name" readonly>
+            <input type="tel" id="order-phone" data-i18n="loginPhoneLabel" placeholder="Phone Number" readonly>
+            
+            <div class="section-title" data-i18n="shippingDetails">Shipping Details</div>
+            <input type="text" id="address" data-i18n="checkoutAddressLabel" placeholder="Shipping Address">
+            <input type="tel" id="pincode" data-i18n="checkoutPincodeLabel" placeholder="Pincode" maxlength="6">
+
+            <button id="checkout-btn" class="continue-button ml" onclick="script.processPayment()">
+                <span id="pay-btn-text" data-i18n="payBtnText">Pay (₹0)</span>
+            </button>
+        </section>
+
+        <section id="thank-you-screen" class="app-screen">
+            <h1 data-i18n="thankYouHeader">Order Complete!</h1>
+            <p data-i18n="thankYouMessage" style="text-align: center; margin-top: 10px;">Your order has been successfully placed. Once payment is complete, your order will be shipped shortly.</p>
+            
+            <h3 style="margin-top: 30px;">Amount Paid: <span id="order-paid-amount">₹0</span></h3>
+            <p data-i18n="orderId" id="order-id-label" style="font-weight: bold;">Order ID:</p>
+
+            <button class="continue-button ml" onclick="script.showScreen('home')" style="margin-top: 50px;">Book List</button>
+        </section>
+        
     </main>
 
     <nav id="main-bottom-nav" class="bottom-nav">
-        <div class="nav-item active" data-target="home" onclick="script.showScreen('home')">
-            <img src="https://cdn.jsdelivr.net/npm/heroicons/outline/book-open.svg" alt="Home">
-            <span data-i18n="homeHeader">Home</span>
-        </div>
-        <div class="nav-item" data-target="cart" onclick="script.showScreen('cart')">
-            <div class="cart-icon-container">
-                <img src="https://cdn.jsdelivr.net/npm/heroicons/outline/shopping-cart.svg" alt="Cart">
-                <span id="cart-count" class="cart-badge">0</span>
-            </div>
-            <span data-i18n="cartHeader">Cart</span>
-        </div>
-        <div class="nav-item" data-target="profile" onclick="script.showScreen('profile')">
-            <img src="https://cdn.jsdelivr.net/npm/heroicons/outline/user.svg" alt="Profile">
-            <span data-i18n="profileHeader">Profile</span>
-        </div>
+        <a href="#" class="nav-item active" data-target="home" onclick="script.showScreen('home')">
+            <img src="images/home.png" alt="Home">
+            <span>Home</span>
+        </a>
+        <a href="#" class="nav-item" data-target="cart" onclick="script.showScreen('cart')">
+            <span class="cart-icon-container">
+                <img src="images/cart.png" alt="Cart">
+                <span id="cart-count" class="cart-badge" style="display: none;">0</span>
+            </span>
+            <span>Cart</span>
+        </a>
+        <a href="#" class="nav-item" data-target="profile" onclick="script.showScreen('profile')">
+            <img src="images/profile.png" alt="Profile">
+            <span>Profile</span>
+        </a>
     </nav>
+    
+    <div id="book-details-action-bar" class="bottom-actions-bar">
+        <button class="add-to-cart-button" onclick="cart.addToCart(script.getCurrentBookId())">+ Cart</button>
+    </div>
 
 </body>
 </html>

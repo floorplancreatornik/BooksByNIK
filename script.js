@@ -74,6 +74,7 @@ const script = (() => {
         const detailsContent = document.querySelector('.book-details-content');
         if (!book) return;
         
+        // FIX: Ensure description is translated based on the current language
         const description = i18n.currentLanguage === 'en' ? book.description_en : book.description;
 
         detailsContent.innerHTML = `
@@ -88,7 +89,7 @@ const script = (() => {
         showScreen('book-details');
     };
 
-    // --- Checkout Logic (FINAL UPI REDIRECT FIX) ---
+    // --- Checkout Logic (UPI UX IMPROVEMENT) ---
 
     const processPayment = async () => {
         const name = document.getElementById('order-name').value.trim(); 
@@ -98,6 +99,10 @@ const script = (() => {
         const total = cart.calculateTotal();
         let isValid = true;
         
+        const payButton = document.getElementById('checkout-btn');
+        const payBtnText = document.getElementById('pay-btn-text');
+        const originalText = payBtnText.innerText; // Store original text
+
         // 1. Validation 
         if (name === "" || phone.length !== 10 || isNaN(phone) || address.length < 10 || pincode.length !== 6 || isNaN(pincode)) {
              alert(i18n.getKey('checkoutValidation'));
@@ -106,33 +111,44 @@ const script = (() => {
 
         if (isValid) {
             
-            // 2. Gather Data for UPI Note & Sheet Logging
-            const bookCodes = cart.getCartItems().map(item => item.id).join('+'); 
+            // UX FIX: Disable button and show loading/redirecting text to prevent double-click
+            payButton.disabled = true;
+            payBtnText.innerText = "Redirecting to UPI App..."; 
 
-            // 3. API submission (Writes to Google Sheet)
-            const orderData = {
-                items: cart.getCartItems(),
-                total: total,
-                shipping: { address, pincode },
-                user: { name, phone } 
-            };
-            const result = await api.submitOrder(orderData);
-            
-            // 4. Generate UPI link with Custom Note
-            const customNote = `${bookCodes}|${pincode}|${phone}|${name.replace(/ /g, '_')}`; 
-            const upiLink = api.generateUpiLink(total, customNote);
+            try {
+                
+                // 2. Gather Data for UPI Note & Sheet Logging
+                const bookCodes = cart.getCartItems().map(item => item.id).join('+'); 
 
-            // 5. Update Order ID and clear cart (MUST be done before redirecting)
-            finalOrderId = result.orderId;
-            localStorage.removeItem('cart');
-            cart.cartItems = [];
-            updateCartBadge();
-            
-            // 6. FIX: REDIRECT TO UPI APP 
-            window.location.href = upiLink; 
-            
-            // IMPORTANT: showScreen('thank-you') is now removed from here. 
-            // The Thank You screen will only be visible if the user hits the browser back button.
+                // 3. API submission (Writes to Google Sheet)
+                const orderData = {
+                    items: cart.getCartItems(),
+                    total: total,
+                    shipping: { address, pincode },
+                    user: { name, phone } 
+                };
+                const result = await api.submitOrder(orderData);
+                
+                // 4. Generate UPI link with Custom Note
+                const customNote = `${bookCodes}|${pincode}|${phone}|${name.replace(/ /g, '_')}`; 
+                const upiLink = api.generateUpiLink(total, customNote);
+
+                // 5. Update Order ID and clear cart (MUST be done before redirecting)
+                finalOrderId = result.orderId;
+                localStorage.removeItem('cart');
+                cart.cartItems = [];
+                updateCartBadge();
+                
+                // 6. REDIRECT TO UPI APP 
+                window.location.href = upiLink; 
+
+            } catch (error) {
+                alert("Payment processing failed. Please try again.");
+                console.error(error);
+                // Re-enable button on error
+                payButton.disabled = false;
+                payBtnText.innerText = originalText;
+            }
         }
     };
     
@@ -152,6 +168,8 @@ const script = (() => {
         }
     };
     
+    // ... (renderProfile, logout, renderCheckout, renderThankYou functions remain the same) ...
+
     const renderProfile = () => {
         const profileContent = document.querySelector('#profile-screen .profile-content');
         const name = localStorage.getItem('userName') || 'User';
@@ -217,6 +235,7 @@ const script = (() => {
         document.getElementById('order-paid-amount').innerText = `₹${cart.calculateTotal()}`;
         document.getElementById('order-id-label').nextElementSibling.innerText = finalOrderId;
     }
+
 
     const getCurrentBookId = () => currentBookId;
     const getCurrentScreenId = () => currentScreenId;
