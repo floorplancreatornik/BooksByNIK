@@ -3,33 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title> <meta name="google" content="notranslate"> 
-
-    <link rel="stylesheet" href="fonts.css">
+    <title></title> <link rel="stylesheet" href="fonts.css">
     <link rel="stylesheet" href="style.css">
     
+    <script defer src="api.js"></script>
+    <script defer src="cart.js"></script>
     <script defer src="i18n.js"></script>
-    <script defer src="login_script.js"></script> 
+    <script defer src="script.js"></script>
 </head>
-<body>
+<body onload="script.checkLogin()" class="notranslate">
 
-    <main class="app-container">
+    <div class="app-container">
         
         <header class="app-header">
             <span class="header-title" data-i18n="appTitle">BooksByNIK</span>
             <div class="header-actions">
+                <button id="dark-mode-toggle" onclick="script.toggleDarkMode()" class="icon-btn">
+                    <img src="images/sun.png" alt="Toggle Dark Mode">
+                </button>
                 <button id="lang-toggle" onclick="i18n.setLanguage(i18n.currentLanguage === 'ml' ? 'en' : 'ml')" class="icon-btn">ML/EN</button>
             </div>
         </header>
 
         <section id="login-screen" class="app-screen login-screen" style="display: flex;">
             <h1 data-i18n="loginHeader">Login</h1>
-            <input type="text" id="name" data-i18n="loginNameLabel" placeholder="Full Name">
-            <input type="tel" id="phone" data-i18n="loginPhoneLabel" placeholder="Phone Number" maxlength="10">
-            <button class="continue-button ml" onclick="loginScript.validateAndRedirect()" data-i18n="loginBtn">Continue</button>
+            <div class="input-group">
+                <input type="text" id="login-name" data-i18n="loginNameLabel" placeholder="Full Name">
+            </div>
+            <div class="input-group">
+                <input type="tel" id="login-phone" data-i18n="loginPhoneLabel" placeholder="Phone Number" maxlength="10">
+            </div>
+            <button class="continue-button" onclick="script.login()" data-i18n="loginBtn">Continue</button>
         </section>
         
-    </main>
+    </div>
 
 </body>
 </html>

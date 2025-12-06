@@ -6,7 +6,40 @@ const script = (() => {
     let currentScreenId = 'home';
     let finalOrderId = ''; 
 
-    // --- Core Navigation and Initialization ---
+    // --- Login Logic ---
+    const checkLogin = () => {
+        i18n.init(); 
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+        }
+        if (localStorage.getItem('isLoggedIn') === 'true') {
+            // If logged in, redirect to the home page (home.html)
+            window.location.href = 'home.html';
+        } else {
+             // Stay on login screen (index.html)
+             showScreen('login');
+        }
+    };
+    
+    const login = () => {
+        const name = document.getElementById('login-name').value.trim();
+        const phone = document.getElementById('login-phone').value.trim();
+        
+        if (name === "" || phone.length !== 10 || isNaN(phone)) {
+            alert(i18n.getKey('loginValidation'));
+            return;
+        }
+        
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('userName', name);
+        localStorage.setItem('userPhone', phone);
+        
+        // Redirect to the home page (home.html)
+        window.location.href = 'home.html';
+    };
+
+
+    // --- Core Navigation and Initialization (Used in home.html) ---
 
     const showScreen = (screenId) => {
         const bottomNav = document.getElementById('main-bottom-nav');
@@ -38,8 +71,7 @@ const script = (() => {
         if (screenId === 'checkout') renderCheckout();
         if (screenId === 'thank-you') renderThankYou();
         
-        // FIX: Re-run i18n initialization on screen change to ensure language button text updates
-        // This is CRITICAL for the language button to work on all screens after the first click.
+        // FIX: Re-run i18n initialization on screen change 
         i18n.init();
     };
 
@@ -50,32 +82,33 @@ const script = (() => {
             document.body.classList.add('dark-mode');
         }
         
-        // Check for login status first
-        if (localStorage.getItem('isLoggedIn') === 'true') {
-            showScreen('home'); 
-        } else {
-             // This is important for the index.html/login screen
-             showScreen('home');
-        }
-        
+        // This is primarily for home.html onload call
         updateCartBadge();
     };
 
     const renderBookList = () => {
         const bookListContainer = document.getElementById('book-list');
-        bookListContainer.innerHTML = api.getBookData().map(book => {
-            return `
-                <div class="book-card" onclick="script.showBookDetails('${book.id}')">
-                    <img src="${book.image}" alt="${book.title}" class="book-cover">
-                    <span class="price-tag">₹${book.price}</span>
-                    <div class="book-details">
-                        <div class="book-title-ml">${book.title}</div>
-                        <div class="book-author">${i18n.getKey('author')}: ${book.author}</div>
-                        <div class="book-category">${i18n.getKey('category')}: ${book.category}</div>
+        // FIX for empty list: Ensure API is returning data
+        const bookData = api.getBookData(); 
+        
+        if (bookData && bookData.length > 0) {
+             bookListContainer.innerHTML = bookData.map(book => {
+                return `
+                    <div class="book-card" onclick="script.showBookDetails('${book.id}')">
+                        <img src="${book.image}" alt="${book.title}" class="book-cover">
+                        <span class="price-tag">₹${book.price}</span>
+                        <div class="book-details">
+                            <div class="book-title-ml">${book.title}</div>
+                            <div class="book-author">${i18n.getKey('author')}: ${book.author}</div>
+                            <div class="book-category">${i18n.getKey('category')}: ${book.category}</div>
+                        </div>
                     </div>
-                </div>
-            `;
-        }).join('');
+                `;
+            }).join('');
+        } else {
+            // Optional: Show a message if no books are loaded
+            bookListContainer.innerHTML = '<p style="text-align: center; color: #999;">Book list is currently empty.</p>';
+        }
     };
 
     const showBookDetails = (id) => {
@@ -111,7 +144,7 @@ const script = (() => {
         
         const payButton = document.getElementById('checkout-btn');
         const payBtnText = document.getElementById('pay-btn-text');
-        const originalText = payBtnText.innerText; // Store original text
+        const originalText = payBtnText.innerText; 
 
         // 1. Validation 
         if (name === "" || phone.length !== 10 || isNaN(phone) || address.length < 10 || pincode.length !== 6 || isNaN(pincode)) {
@@ -143,7 +176,7 @@ const script = (() => {
                 const customNote = `${bookCodes}|${pincode}|${phone}|${name.replace(/ /g, '_')}`; 
                 const upiLink = api.generateUpiLink(total, customNote);
 
-                // 5. Update Order ID and clear cart (MUST be done before redirecting)
+                // 5. Update Order ID and clear cart
                 finalOrderId = result.orderId;
                 localStorage.removeItem('cart');
                 cart.cartItems = [];
@@ -203,6 +236,7 @@ const script = (() => {
     };
 
     const renderCheckout = () => {
+        // ... (function logic remains the same) ...
         const total = cart.calculateTotal();
         const summaryItems = document.getElementById('summary-items');
         const totalAmountSpan = document.getElementById('total-amount');
@@ -248,9 +282,15 @@ const script = (() => {
     const getCurrentBookId = () => currentBookId;
     const getCurrentScreenId = () => currentScreenId;
 
-    document.addEventListener('DOMContentLoaded', init);
+    // Call init for home.html (loaded via home.html's onload attribute)
+    if (document.URL.includes('home.html')) {
+        document.addEventListener('DOMContentLoaded', init);
+    }
+    // No explicit DOMContentLoaded listener for index.html as it uses checkLogin in onload
 
     return {
+        login,
+        checkLogin,
         showScreen,
         toggleDarkMode,
         updateCartBadge,
