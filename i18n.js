@@ -1,5 +1,6 @@
 const i18n = (() => {
-    let currentLanguage = localStorage.getItem('language') || 'ml';
+    // CHANGE: Setting 'en' as the default fallback language
+    let currentLanguage = localStorage.getItem('language') || 'en'; 
 
     const translations = {
         ml: {
@@ -74,7 +75,6 @@ const i18n = (() => {
             localStorage.setItem('language', lang);
             init(); // Re-initializes all data-i18n attributes
 
-            // FIX for Persistence: Forces the current screen to re-render 
             if (script && script.getCurrentScreenId) { 
                 script.showScreen(script.getCurrentScreenId()); 
             }
