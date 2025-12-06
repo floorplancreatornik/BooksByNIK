@@ -37,6 +37,10 @@ const script = (() => {
         if (screenId === 'profile') renderProfile();
         if (screenId === 'checkout') renderCheckout();
         if (screenId === 'thank-you') renderThankYou();
+        
+        // FIX: Re-run i18n initialization on screen change to ensure language button text updates
+        // This is CRITICAL for the language button to work on all screens after the first click.
+        i18n.init();
     };
 
     const init = () => {
@@ -46,7 +50,13 @@ const script = (() => {
             document.body.classList.add('dark-mode');
         }
         
-        showScreen('home'); 
+        // Check for login status first
+        if (localStorage.getItem('isLoggedIn') === 'true') {
+            showScreen('home'); 
+        } else {
+             // This is important for the index.html/login screen
+             showScreen('home');
+        }
         
         updateCartBadge();
     };
@@ -168,8 +178,6 @@ const script = (() => {
         }
     };
     
-    // ... (renderProfile, logout, renderCheckout, renderThankYou functions remain the same) ...
-
     const renderProfile = () => {
         const profileContent = document.querySelector('#profile-screen .profile-content');
         const name = localStorage.getItem('userName') || 'User';
