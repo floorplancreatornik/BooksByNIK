@@ -24,18 +24,30 @@
                 <button id="dark-mode-toggle" onclick="script.toggleDarkMode()" class="icon-btn">
                     <span>🌙/☀️</span> 
                 </button>
-                <button id="lang-toggle" onclick="i18n.setLanguage(i18n.currentLanguage === 'ml' ? 'en' : 'ml')" class="icon-btn">ML/EN</button>
             </div>
         </header>
 
         <section id="login-screen" class="app-screen login-screen" style="display: flex;">
             <h1 data-i18n="loginHeader">Login</h1>
+            
+            <div class="input-group">
+                <select 
+                    id="login-language" 
+                    class="language-select" 
+                    onchange="i18n.setLanguage(this.value)"
+                    style="margin-bottom: 20px;">
+                    <option value="en" data-i18n="langEnglish">English</option>
+                    <option value="ml" data-i18n="langMalayalam">മലയാളം</option>
+                </select>
+            </div>
+            
             <div class="input-group">
                 <input type="text" id="login-name" data-i18n="loginNameLabel" placeholder="Full Name">
             </div>
             <div class="input-group">
                 <input type="tel" id="login-phone" data-i18n="loginPhoneLabel" placeholder="Phone Number" maxlength="10">
             </div>
+            
             <button class="continue-button" onclick="script.login()" data-i18n="loginBtn">Continue</button>
         </section>
         

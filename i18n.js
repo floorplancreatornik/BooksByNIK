@@ -1,6 +1,5 @@
 const i18n = (() => {
 
-    // CHANGE: Setting 'en' as the default fallback language
     let currentLanguage = localStorage.getItem('language') || 'en'; 
     const translations = {
 
@@ -35,8 +34,11 @@ const i18n = (() => {
             profileNote: 'നിങ്ങളുടെ വിവരങ്ങൾ പ്രാദേശികമായി സേവ് ചെയ്തിരിക്കുന്നു.',
             logoutBtn: 'ലോഗ്ഔട്ട് ചെയ്യുക',
             darkModeToggle: 'നൈറ്റ് മോഡ്',
-            // NEW: Added backBtn for details page
-            backBtn: 'പുസ്തകങ്ങളുടെ ലിസ്റ്റ്' 
+            backBtn: 'പുസ്തകങ്ങളുടെ ലിസ്റ്റ്', 
+            langEnglish: 'ഇംഗ്ലീഷ്', 
+            langMalayalam: 'മലയാളം', 
+            profileLanguageHeader: 'ഭാഷ മാറ്റുക', 
+            profileLanguageBtn: 'ഭാഷ മാറ്റുക', 
         },
 
         en: {
@@ -70,8 +72,11 @@ const i18n = (() => {
             profileNote: 'Your information is saved locally.',
             logoutBtn: 'Logout',
             darkModeToggle: 'Dark Mode',
-            // NEW: Added backBtn for details page
-            backBtn: 'Book List' 
+            backBtn: 'Book List',
+            langEnglish: 'English', 
+            langMalayalam: 'Malayalam', 
+            profileLanguageHeader: 'Change Language', 
+            profileLanguageBtn: 'Change Language', 
         }
 
     };
@@ -80,10 +85,11 @@ const i18n = (() => {
         if (translations[lang]) {
             currentLanguage = lang;
             localStorage.setItem('language', lang);
-            init(); // Re-initializes all data-i18n attributes
             
-            // Re-render the current screen to update dynamic content (like book lists or cart)
-            // This is critical for fixing the one-time issue and empty book list bug
+            // This re-translates static elements
+            init(); 
+            
+            // This re-renders dynamic elements (CRITICAL FIX FOR TOGGLE ISSUE)
             if (typeof script !== 'undefined' && typeof script.showScreen === 'function' && typeof script.getCurrentScreenId === 'function') {
                 script.showScreen(script.getCurrentScreenId()); 
             }
@@ -102,20 +108,17 @@ const i18n = (() => {
             } else {
                 element.innerText = getKey(key);
             }
+            // For Select options, we translate text but keep value
+            if (element.tagName === 'OPTION') {
+                element.innerText = getKey(key);
+            }
         });
-
-        // CRITICAL FIX: Ensure the button label itself updates on every click
-        const langToggle = document.getElementById('lang-toggle');
-        if (langToggle) {
-             // The button should show the language it will switch TO next
-             langToggle.innerText = currentLanguage === 'ml' ? 'English' : 'മലയാളം'; 
-        }
     };
     
     return {
         init,
         getKey,
         setLanguage,
-        currentLanguage 
+        currentLanguage
     };
 })();
