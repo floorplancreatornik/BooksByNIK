@@ -1,9 +1,9 @@
 const script = (() => {
     const APP_SCREENS = [
-        'login', 'home', 'cart', 'profile', 'book-details', 'checkout', 'thank-you'
+        'home', 'cart', 'profile', 'book-details', 'checkout', 'thank-you' // Removed 'login'
     ];
     let currentBookId = null;
-    let currentScreenId = 'login';
+    let currentScreenId = 'home';
     let finalOrderId = ''; 
 
     // --- Core Navigation and Initialization ---
@@ -46,30 +46,13 @@ const script = (() => {
             document.body.classList.add('dark-mode');
         }
         
-        if (localStorage.getItem('isLoggedIn') === 'true') {
-            showScreen('home');
-        } else {
-            showScreen('login');
-        }
+        // Start directly on the home screen as login is handled externally
+        showScreen('home'); 
         
         updateCartBadge();
     };
 
-    const validateAndRedirect = () => {
-        const name = document.getElementById('name').value.trim();
-        const phone = document.getElementById('phone').value.trim();
-
-        if (name === "" || phone.length !== 10 || isNaN(phone)) {
-            alert(i18n.getKey('loginValidation'));
-            return;
-        }
-
-        localStorage.setItem('userName', name);
-        localStorage.setItem('userPhone', phone);
-        localStorage.setItem('isLoggedIn', 'true');
-
-        showScreen('home');
-    };
+    // Removed validateAndRedirect function, as it is now in login_script.js
 
     const renderBookList = () => {
         const bookListContainer = document.getElementById('book-list');
@@ -108,16 +91,18 @@ const script = (() => {
         showScreen('book-details');
     };
 
-    // --- Checkout Logic (Revised for UPI Note) ---
+    // --- Checkout Logic (Uses Editable Fields) ---
 
     const processPayment = async () => {
+        const name = document.getElementById('order-name').value.trim(); 
+        const phone = document.getElementById('order-phone').value.trim(); 
         const address = document.getElementById('address').value.trim();
         const pincode = document.getElementById('pincode').value.trim();
         const total = cart.calculateTotal();
         let isValid = true;
         
-        // 1. Validation
-        if (address.length < 10 || pincode.length !== 6 || isNaN(pincode)) {
+        // 1. Validation (Includes checks for Name and Phone)
+        if (name === "" || phone.length !== 10 || isNaN(phone) || address.length < 10 || pincode.length !== 6 || isNaN(pincode)) {
              alert(i18n.getKey('checkoutValidation'));
              isValid = false;
         }
@@ -125,26 +110,23 @@ const script = (() => {
         if (isValid) {
             
             // 2. Gather Data for UPI Note & Sheet Logging
-            const name = localStorage.getItem('userName') || 'N/A';
-            const phone = localStorage.getItem('userPhone') || 'N/A';
-            const bookCodes = cart.getCartItems().map(item => item.id).join('+'); // e.g., WOH001+ADVE002
+            const bookCodes = cart.getCartItems().map(item => item.id).join('+'); 
 
             // 3. API submission (Writes to Google Sheet)
             const orderData = {
                 items: cart.getCartItems(),
                 total: total,
-                shipping: { address, pincode }
+                shipping: { address, pincode },
+                user: { name, phone } 
             };
             const result = await api.submitOrder(orderData);
             
             // 4. Generate UPI link with Custom Note
-            
-            // Custom UPI Note Format: bookcode|pincode|phonenumber|full name with spaces
             const customNote = `${bookCodes}|${pincode}|${phone}|${name.replace(/ /g, '_')}`; 
             
             const upiLink = api.generateUpiLink(total, customNote);
 
-            window.open(upiLink, '_blank'); // Open UPI app
+            window.open(upiLink, '_blank'); 
 
             // 5. Update Thank You Screen and clear cart
             finalOrderId = result.orderId;
@@ -193,7 +175,8 @@ const script = (() => {
         localStorage.removeItem('userName');
         localStorage.removeItem('userPhone');
         localStorage.removeItem('cart');
-        showScreen('login');
+        // Redirect back to the dedicated login page
+        window.location.href = 'index.html';
     };
 
     const renderCheckout = () => {
@@ -202,6 +185,14 @@ const script = (() => {
         const totalAmountSpan = document.getElementById('total-amount');
         const payBtnText = document.getElementById('pay-btn-text');
         
+        // Get the stored login info
+        const storedName = localStorage.getItem('userName') || '';
+        const storedPhone = localStorage.getItem('userPhone') || '';
+        
+        // Set the input values (pre-fill)
+        document.getElementById('order-name').value = storedName;
+        document.getElementById('order-phone').value = storedPhone;
+
         let summaryHTML = '';
 
         if (cart.getCartItems().length === 0) {
@@ -237,7 +228,6 @@ const script = (() => {
 
     return {
         showScreen,
-        validateAndRedirect,
         toggleDarkMode,
         updateCartBadge,
         showBookDetails,
